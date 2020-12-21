@@ -8,21 +8,25 @@ package com.example.message.message.controller;/*
 
 import com.example.message.message.VO.ResultVO;
 import com.example.message.message.dataobject.Message;
+import com.example.message.message.dto.MessageDTO;
 import com.example.message.message.service.MessageService;
 import com.example.message.message.service.UserService;
 import com.example.message.message.utils.ResultVOUtil;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/message")
@@ -73,17 +77,34 @@ public class MessageController {
             @RequestParam("size") Integer size,
             @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
             Map<String,Object> map) {
-        PageRequest request = PageRequest.of(page-1,size);
+        //按照发布时间降序排序
+        Sort sort = Sort.by(Sort.Direction.DESC,"createTime");
+        PageRequest request = PageRequest.of(page-1,size,sort);
         Message query = new Message();
         query.setPid(pid);
         Example<Message> example = Example.of(query);
         Page<Message> messagePage = messageService.getMessages(example,request);
+
+
+
+        //将留言的id筛选出来构建一个id的集合，然后查询这些留言的回复保存到byPidIn
+        List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<Message> byPidIn = messageService.findByPidIn(pidList);
+        //
+        List<MessageDTO> messageDTOS = messagePage.getContent().stream().map(e -> new MessageDTO(e)).collect(Collectors.toList());
+        messageDTOS = messageDTOS.stream().map(item -> {
+            List<Message> messageList = byPidIn.stream().filter(i ->
+                    i.getPid().equals( item.getId())
+            ).collect(Collectors.toList());
+            item.setMessageList(messageList);
+            return item;
+        }).collect(Collectors.toList());
+
         map.put("page",page);
         map.put("size",size);
-        map.put("messageList",messagePage.getContent());
+        map.put("messageDTOS",messageDTOS);
         map.put("total",messagePage.getTotalElements());
-        List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getPid()).collect(Collectors.toList());
-        List<Message> byPidIn = messageService.findByPidIn(pidList);
+
         return ResultVOUtil.success(map);
     }
 
