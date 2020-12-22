@@ -1,5 +1,5 @@
 <html>
-<#include "../test/header.ftlh">
+<#include "./header.ftlh">
 <body>
 
 <ul>
