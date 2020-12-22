@@ -8,6 +8,7 @@ package com.example.message.message.dto;/*
 
 import com.example.message.message.dataobject.Message;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -28,4 +29,11 @@ public class MessageDTO {
     private Integer likeNum;
 
     private List<Message> messageList;
+
+    public MessageDTO() {
+    }
+
+    public MessageDTO(Message message){
+        BeanUtils.copyProperties(message,this);
+    }
 }
