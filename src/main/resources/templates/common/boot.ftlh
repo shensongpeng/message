@@ -1,23 +1,19 @@
 <html>
 <#include "./header.ftlh">
 <body>
+<div class="container">
 
-<ul>
-<#--    <#list messageDTOS as messageDTO>-->
 
-<#--        <div><span>${messageDTO.userName}</span>-->
-<#--        </div>-->
-<#--        <div class="list-group">-->
-<#--                <img class="list-group-item img-responsive" width="100" height="100" src="${messageDTO.userAvatar}">-->
-<#--                <a href="#" class="list-group-item active">-->
-<#--                        <h4 class="list-group-item-heading">List group item heading</h4>-->
-<#--                        <p class="list-group-item-text">${messageDTO.content}</p>-->
-<#--                </a>-->
-<#--        </div>-->
-<#--    </#list>-->
+<form>
+    <div class="form-group " >
+        <textarea rows="4" class="form-control" id="messageContent">
 
-</ul>
+        </textarea>
+        <button type="submit" class="btn btn-default">发表</button>
+        <button type="button" class="btn btn-default">取消</button>
+    </div>
 
+</form>
 <ul class="media-list">
         <#list messageDTOS as messageDTO>
                 <li class="media">
@@ -68,5 +64,6 @@
                 </li>
         </#list>
 </ul>
+</div>
 </body>
 </html>

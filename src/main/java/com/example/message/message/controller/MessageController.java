@@ -31,25 +31,25 @@ import java.util.stream.Stream;
 public class MessageController {
     final MessageService messageService;
     final UserService userService;
+//    //创建留言和回复
+//    @PostMapping("/create")
+//    public ResultVO<Message> create(Message message) {
+//        Message result = messageService.create(message, message.getUserName());
+//        return ResultVOUtil.success(result);
+//    }
+//
+//    //创建留言和回复
+//    @PostMapping("/create1")
+//    public ResultVO<Message> createtest(@RequestParam Map<String ,Object> params) {
+//        System.out.println(params);
+//        Message message = new Message();
+//
+//       // Message result = messageService.create(message, message.getUserName());
+//        return ResultVOUtil.success(params);
+//    }
     //创建留言和回复
     @PostMapping("/create")
-    public ResultVO<Message> create(Message message) {
-        Message result = messageService.create(message, message.getUserName());
-        return ResultVOUtil.success(result);
-    }
-
-    //创建留言和回复
-    @PostMapping("/create1")
-    public ResultVO<Message> createtest(@RequestParam Map<String ,Object> params) {
-        System.out.println(params);
-        Message message = new Message();
-
-       // Message result = messageService.create(message, message.getUserName());
-        return ResultVOUtil.success(params);
-    }
-    //创建留言和回复
-    @PostMapping("/create2")
-    public ResultVO<Message> createtest1(
+    public ResultVO<Message> createtest(
             @RequestParam(name = "username") String  username,
             @RequestParam(name = "userId") Integer  userId,
             @RequestParam(name = "pid",defaultValue = "-1") Integer  pid,
@@ -72,43 +72,43 @@ public class MessageController {
         Message result = messageService.create(message);
         return ResultVOUtil.success(result);
     }
-    @PostMapping("/getMessages")
-    public ResultVO<List<MessageDTO>> getMessages(
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size,
-            @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
-            Map<String,Object> map) {
-        //按照发布时间降序排序
-        Sort sort = Sort.by(Sort.Direction.DESC,"createTime");
-        PageRequest request = PageRequest.of(page-1,size,sort);
-        Message query = new Message();
-        query.setPid(pid);
-        Example<Message> example = Example.of(query);
-        Page<Message> messagePage = messageService.getMessages(example,request);
-
-
-
-        //将留言的id筛选出来构建一个id的集合，然后查询这些留言的回复保存到byPidIn
-        List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getId()).collect(Collectors.toList());
-        List<Message> byPidIn = messageService.findByPidIn(pidList);
-        //
-        List<MessageDTO> messageDTOS = messagePage.getContent().stream().map(e -> new MessageDTO(e)).collect(Collectors.toList());
-        messageDTOS = messageDTOS.stream().map(item -> {
-            List<Message> messageList = byPidIn.stream().filter(i ->
-                    i.getPid().equals( item.getId())
-            ).collect(Collectors.toList());
-            item.setMessageList(messageList);
-            return item;
-        }).collect(Collectors.toList());
-
-        map.put("page",page);
-        map.put("size",size);
-        map.put("messageDTOS",messageDTOS);
-        map.put("total",messagePage.getTotalElements());
-
-        return ResultVOUtil.success(map);
-    }
-    @GetMapping("/test")
+//    @PostMapping("/getMessages")
+//    public ResultVO<List<MessageDTO>> getMessages(
+//            @RequestParam("page") Integer page,
+//            @RequestParam("size") Integer size,
+//            @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
+//            Map<String,Object> map) {
+//        //按照发布时间降序排序
+//        Sort sort = Sort.by(Sort.Direction.DESC,"createTime");
+//        PageRequest request = PageRequest.of(page-1,size,sort);
+//        Message query = new Message();
+//        query.setPid(pid);
+//        Example<Message> example = Example.of(query);
+//        Page<Message> messagePage = messageService.getMessages(example,request);
+//
+//
+//
+//        //将留言的id筛选出来构建一个id的集合，然后查询这些留言的回复保存到byPidIn
+//        List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getId()).collect(Collectors.toList());
+//        List<Message> byPidIn = messageService.findByPidIn(pidList);
+//        //
+//        List<MessageDTO> messageDTOS = messagePage.getContent().stream().map(e -> new MessageDTO(e)).collect(Collectors.toList());
+//        messageDTOS = messageDTOS.stream().map(item -> {
+//            List<Message> messageList = byPidIn.stream().filter(i ->
+//                    i.getPid().equals( item.getId())
+//            ).collect(Collectors.toList());
+//            item.setMessageList(messageList);
+//            return item;
+//        }).collect(Collectors.toList());
+//
+//        map.put("page",page);
+//        map.put("size",size);
+//        map.put("messageDTOS",messageDTOS);
+//        map.put("total",messagePage.getTotalElements());
+//
+//        return ResultVOUtil.success(map);
+//    }
+    @GetMapping("/getMessages")
     public ModelAndView test(
             @RequestParam(value = "page",defaultValue = "1") Integer page,
             @RequestParam(value = "size",defaultValue = "10") Integer size,
