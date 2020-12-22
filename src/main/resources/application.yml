@@ -5,7 +5,11 @@ spring:
     url: jdbc:mysql://localhost:3306/testdemo?serverTimeZone=UTC&characterEncoding=utf-8&useSSL=false&useOldAliasMetadataBehavior=true&allowPublicKeyRetrieval=true
   jpa:
     show-sql: true
+  freemarker:
+    template-loader-path: classpath:/templates/
+
 server:
+  context-path: /app
   servlet:
     context-path: /app
 
