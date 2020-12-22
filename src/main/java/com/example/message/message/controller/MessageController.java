@@ -16,10 +16,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,17 +60,20 @@ public class MessageController {
         //设置参数
         Message message = new Message();
         message.setType(type);
-        message.setPid(pid);
+        message.setPid(-1);
         message.setUserId(userId);
         message.setUserName(username);
         message.setContent(content);
-        if (type ==1 ) message.setTargetUserId(targetUserId);
+        if (type ==1 ) {
+            message.setPid(pid);
+            message.setTargetUserId(targetUserId);
+        }
 
         Message result = messageService.create(message);
         return ResultVOUtil.success(result);
     }
     @PostMapping("/getMessages")
-    public ResultVO<List> getMessages(
+    public ResultVO<List<MessageDTO>> getMessages(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
@@ -107,6 +108,44 @@ public class MessageController {
 
         return ResultVOUtil.success(map);
     }
+    @GetMapping("/test")
+    public ModelAndView test(
+            @RequestParam(value = "page",defaultValue = "1") Integer page,
+            @RequestParam(value = "size",defaultValue = "10") Integer size,
+            @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
+            Map<String,Object> map) {
+        //按照发布时间降序排序
+        Sort sort = Sort.by(Sort.Direction.DESC,"createTime");
+        PageRequest request = PageRequest.of(page-1,size,sort);
+        Message query = new Message();
+        query.setPid(pid);
+        Example<Message> example = Example.of(query);
+        Page<Message> messagePage = messageService.getMessages(example,request);
+
+
+
+        //将留言的id筛选出来构建一个id的集合，然后查询这些留言的回复保存到byPidIn
+        List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<Message> byPidIn = messageService.findByPidIn(pidList);
+        //
+        List<MessageDTO> messageDTOS = messagePage.getContent().stream().map(e -> new MessageDTO(e)).collect(Collectors.toList());
+        messageDTOS = messageDTOS.stream().map(item -> {
+            List<Message> messageList = byPidIn.stream().filter(i ->
+                    i.getPid().equals( item.getId())
+            ).collect(Collectors.toList());
+            item.setMessageList(messageList);
+            return item;
+        }).collect(Collectors.toList());
+
+        map.put("page",page);
+        map.put("size",size);
+        map.put("messageDTOS",messageDTOS);
+        map.put("total",messagePage.getTotalElements());
+
+        return new ModelAndView("common/boot",map);
+
+    }
+
 
 
 
