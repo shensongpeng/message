@@ -14,12 +14,15 @@ import com.example.message.message.service.UserService;
 import com.example.message.message.utils.ResultVOUtil;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -55,6 +58,24 @@ public class UserController {
 
     }
 
+    @PostMapping("/login")
+    public ModelAndView login(
+            @RequestParam("username") String userName,
+            @RequestParam("password") String password,
+            Map<String,Object> map){
+        User user = new User();
+        user.setUserName(userName);
+        user.setPassword(password);
+        Optional<User> byUserName = userService.findOne(Example.of(user));
+        //未查询到
+        if (!byUserName.isPresent()) {
+
+        }
+        user = byUserName.get();
+        map.put("user",user);
+
+        return new ModelAndView("common/boot",map);
+    }
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
