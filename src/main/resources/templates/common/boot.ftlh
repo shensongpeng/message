@@ -14,10 +14,7 @@
 
             const a = $(this).parent().next();
             $(a).toggle();
-            $(a).show(function () {
-                alert(this);
-            });
-            console.log(a);
+
         })
 
     })
@@ -91,7 +88,7 @@
                                     评论
                                 </button>
                             </h5>
-                            <div class="hidden">
+                            <div style="display:none">
                                 <form role="form" name="sendReply" action="http://localhost:8080/app/message/create" method="post">
                                     <input type="hidden" name="username" value="漩涡鸣人">
                                     <input type="hidden" name="userId" value="3">
