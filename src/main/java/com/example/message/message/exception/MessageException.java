@@ -12,6 +12,16 @@ public class MessageException extends RuntimeException{
     private Integer code;
 
     public MessageException(ResultEnum resultEnum) {
+        super(resultEnum.getMessage());
         this.code = code;
     }
+    public MessageException(Integer code, String message) {
+        super(message);
+        this.code = code;
+    }
+    public MessageException() {
+        super();
+    }
+
+
 }

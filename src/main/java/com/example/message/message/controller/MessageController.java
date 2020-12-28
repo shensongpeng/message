@@ -7,9 +7,10 @@ package com.example.message.message.controller;/*
  * */
 
 import com.example.message.message.VO.ResultVO;
+import com.example.message.message.dataobject.InsAwesome;
 import com.example.message.message.dataobject.Message;
-import com.example.message.message.dataobject.User;
 import com.example.message.message.dto.MessageDTO;
+import com.example.message.message.service.InsAweService;
 import com.example.message.message.service.MessageService;
 import com.example.message.message.service.UserService;
 import com.example.message.message.utils.CookieUtil;
@@ -18,22 +19,23 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/message")
 public class MessageController {
     final MessageService messageService;
     final UserService userService;
+    final InsAweService insAweService;
 //    //创建留言和回复
 //    @PostMapping("/create")
 //    public ResultVO<Message> create(Message message) {
@@ -120,7 +122,9 @@ public class MessageController {
             @RequestParam(value = "page",defaultValue = "1") Integer page,
             @RequestParam(value = "size",defaultValue = "10") Integer size,
             @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
+            HttpServletRequest httpServletRequest,
             Map<String,Object> map) {
+        Integer userId = Integer.valueOf(CookieUtil.get(httpServletRequest,"userId").getValue());
         //按照发布时间降序排序
         Sort sort = Sort.by(Sort.Direction.DESC,"createTime");
         PageRequest request = PageRequest.of(page-1,size,sort);
@@ -135,6 +139,11 @@ public class MessageController {
         List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getId()).collect(Collectors.toList());
         List<Message> byPidIn = messageService.findByPidIn(pidList);
         //
+        List<Integer> childPid = byPidIn.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+        List<Integer> messageIdList = new ArrayList<>(childPid);
+        messageIdList.addAll(pidList);
+        List<InsAwesome> list = insAweService.findByMessageIDInAndUserId(messageIdList,userId);
         List<MessageDTO> messageDTOS = messagePage.getContent().stream().map(e -> new MessageDTO(e)).collect(Collectors.toList());
         messageDTOS = messageDTOS.stream().map(item -> {
             List<Message> messageList = byPidIn.stream().filter(i ->
@@ -145,9 +154,11 @@ public class MessageController {
         }).collect(Collectors.toList());
 
         map.put("page",page);
+        map.put("currentPage",page);
         map.put("size",size);
         map.put("messageDTOS",messageDTOS);
         map.put("total",messagePage.getTotalElements());
+        map.put("totalPages",messagePage.getTotalPages());
 
         return new ModelAndView("common/boot",map);
 
@@ -156,8 +167,9 @@ public class MessageController {
 
 
 
-    public MessageController(MessageService messageService, UserService userService) {
+    public MessageController(MessageService messageService, UserService userService, InsAweService insAweService) {
         this.messageService = messageService;
         this.userService = userService;
+        this.insAweService = insAweService;
     }
 }

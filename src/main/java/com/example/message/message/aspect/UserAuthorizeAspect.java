@@ -1,6 +1,7 @@
 package com.example.message.message.aspect;
 
 import com.example.message.message.constant.CookieConstant;
+import com.example.message.message.enums.ResultEnum;
 import com.example.message.message.exception.UserAuthorizeException;
 import com.example.message.message.utils.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class UserAuthorizeAspect {
         Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
         if (cookie == null) {
             log.warn("【登录校验】Cookie中查不到token");
-            throw new UserAuthorizeException();
+            throw new UserAuthorizeException(ResultEnum.NO_TOKEN);
         }
     }
 }

@@ -10,6 +10,8 @@ public enum ResultEnum {
     USER_CREATE_FAIL(3,"用户创建失败"),
     TARGET_USER_ID_IS_NULL(4,"回复用户id为空"),
     REPLY_MESSAGE_NOT_EXIT(5,"回复的留言不存在"),
+    NO_TOKEN(6,"未登录"),
+    MESSAGE_NOT_EXIT(7,"留言不存在"),
     ;
     private Integer code;
 

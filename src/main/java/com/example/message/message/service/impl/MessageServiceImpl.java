@@ -59,6 +59,16 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public Optional<Message> findOne(Example<Message> example) {
+        return messageRepository.findOne(example);
+    }
+
+    @Override
+    public Optional<Message> findOne(Integer messageId) {
+        return messageRepository.findById(messageId);
+    }
+
+    @Override
     public List<Message> findByPidIn(List<Integer> pids) {
         return messageRepository.findByPidInOrderByCreateTimeDesc(pids);
     }
