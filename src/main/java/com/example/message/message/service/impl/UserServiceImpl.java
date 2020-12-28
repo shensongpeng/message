@@ -7,7 +7,7 @@ package com.example.message.message.service.impl;/*
  * */
 
 import com.example.message.message.dataobject.User;
-import com.example.message.message.repository.UserRepositorry;
+import com.example.message.message.repository.UserRepository;
 import com.example.message.message.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    final UserRepositorry userRepositorry;
+    final UserRepository userRepositorry;
 
 
 
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Autowired
-    public UserServiceImpl(UserRepositorry userRepositorry) {
+    public UserServiceImpl(UserRepository userRepositorry) {
         this.userRepositorry = userRepositorry;
     }
 }
