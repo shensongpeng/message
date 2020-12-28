@@ -96,7 +96,6 @@
 
             }
         });
-        window.location.href = "/app/message/getMessages";
 
 
     }

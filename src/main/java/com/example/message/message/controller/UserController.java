@@ -7,10 +7,14 @@ package com.example.message.message.controller;/*
  * */
 
 import com.example.message.message.VO.ResultVO;
+import com.example.message.message.constant.CookieConstant;
+import com.example.message.message.constant.RedisConstant;
 import com.example.message.message.dataobject.User;
 import com.example.message.message.enums.ResultEnum;
 import com.example.message.message.exception.MessageException;
+import com.example.message.message.exception.UserAuthorizeException;
 import com.example.message.message.service.UserService;
+import com.example.message.message.utils.CookieUtil;
 import com.example.message.message.utils.ResultVOUtil;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -59,9 +65,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ModelAndView login(
+    public String login(
             @RequestParam("username") String userName,
             @RequestParam("password") String password,
+            HttpServletResponse response,
             Map<String,Object> map){
         User user = new User();
         user.setUserName(userName);
@@ -69,12 +76,18 @@ public class UserController {
         Optional<User> byUserName = userService.findOne(Example.of(user));
         //未查询到
         if (!byUserName.isPresent()) {
-
+            throw new MessageException(ResultEnum.USER_NOT_EXIT);
         }
         user = byUserName.get();
         map.put("user",user);
+        String token = UUID.randomUUID().toString();
+        //log.info("登录成功的token={}", token);
+        Integer expire = RedisConstant.EXPIRE;
+        //3. 设置token至cookie
+        CookieUtil.set(response, CookieConstant.TOKEN, token, expire);
+        CookieUtil.set(response, "userId", user.getId().toString(), expire);
+        return "登录成功";
 
-        return new ModelAndView("common/boot",map);
     }
     @Autowired
     public UserController(UserService userService) {

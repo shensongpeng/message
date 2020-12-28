@@ -60,7 +60,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<Message> findByPidIn(List<Integer> pids) {
-        return messageRepository.findByPidIn(pids);
+        return messageRepository.findByPidInOrderByCreateTimeDesc(pids);
     }
 
     @Override
@@ -72,7 +72,8 @@ public class MessageServiceImpl implements MessageService {
 
     public Message create(Message message) {
 
-        Optional<User> optionalUser = userService.findByUserName(message.getUserName());
+//        Optional<User> optionalUser = userService.findByUserName(message.getUserName());
+        Optional<User> optionalUser = userService.findOne(message.getUserId());
         if (!optionalUser.isPresent()) {
             throw new MessageException(ResultEnum.USER_NOT_EXIT);
         }

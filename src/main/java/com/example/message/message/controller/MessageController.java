@@ -8,9 +8,11 @@ package com.example.message.message.controller;/*
 
 import com.example.message.message.VO.ResultVO;
 import com.example.message.message.dataobject.Message;
+import com.example.message.message.dataobject.User;
 import com.example.message.message.dto.MessageDTO;
 import com.example.message.message.service.MessageService;
 import com.example.message.message.service.UserService;
+import com.example.message.message.utils.CookieUtil;
 import com.example.message.message.utils.ResultVOUtil;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,19 +53,21 @@ public class MessageController {
     //创建留言和回复
     @PostMapping("/create")
     public ResultVO<Message> createtest(
-            @RequestParam(name = "username") String  username,
-            @RequestParam(name = "userId") Integer  userId,
             @RequestParam(name = "pid",defaultValue = "-1") Integer  pid,
             @RequestParam(name = "content") String  content,
             @RequestParam(name = "targetUserId",required = false) Integer  targetUserId,
-            @RequestParam(name = "type",defaultValue = "0" ) Integer  type) {
+            @RequestParam(name = "type",defaultValue = "0" ) Integer  type,
+            HttpServletRequest request) {
         System.out.println(type);
         //设置参数
+        Integer userId = Integer.valueOf(CookieUtil.get(request,"userId").getValue());
+
         Message message = new Message();
+        message.setUserId(userId);
         message.setType(type);
         message.setPid(-1);
-        message.setUserId(userId);
-        message.setUserName(username);
+//        message.setUserId(userId);
+//        message.setUserName(username);
         message.setContent(content);
         if (type ==1 ) {
             message.setPid(pid);
@@ -108,6 +113,8 @@ public class MessageController {
 //
 //        return ResultVOUtil.success(map);
 //    }
+
+
     @GetMapping("/getMessages")
     public ModelAndView test(
             @RequestParam(value = "page",defaultValue = "1") Integer page,
