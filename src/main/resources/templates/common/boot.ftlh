@@ -156,7 +156,7 @@
                                 <h4 class="media-heading">${messageDTO.userName}</h4>
                                 ${messageDTO.content}
                                 <h5>
-                                    <span>${messageDTO.createTime}   </span>
+                                    <span>${messageDTO.createTime}</span>
                                     <button type="button" class="btn btn-default btn-sm awe">
                                         <div type="hidden" style=" display:none;">${messageDTO.id}</div>
                                         <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
