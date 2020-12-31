@@ -64,7 +64,8 @@
             },
             success: function (data) {
                 console.log("登录成功", data);
-                window.location.href = "/app/message/getMessages";
+                // window.location.href = "/app/message/getMessages";
+                window.location.reload();
             },
             error: function (err) {
                 textarea.disable = false;
@@ -108,7 +109,8 @@
             success: function (data) {
                 console.log("登录成功", data);
                 button.disable = true;
-                window.location.href = "/app/message/getMessages";
+                // window.location.href = "/app/message/getMessages";
+                window.location.reload();
             },
             error: function (err) {
                 textarea.disable = false;
