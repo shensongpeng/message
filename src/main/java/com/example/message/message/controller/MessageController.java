@@ -163,6 +163,52 @@ public class MessageController {
         return new ModelAndView("common/boot",map);
 
     }
+    @PostMapping("/getMessages")
+    public ModelAndView postGetMessages(
+            @RequestParam(value = "page",defaultValue = "1") Integer page,
+            @RequestParam(value = "size",defaultValue = "10") Integer size,
+            @RequestParam(name = "pid", defaultValue = "-1") Integer pid,
+            HttpServletRequest httpServletRequest,
+            Map<String,Object> map) {
+        Integer userId = Integer.valueOf(CookieUtil.get(httpServletRequest,"userId").getValue());
+        //按照发布时间降序排序
+        Sort sort = Sort.by(Sort.Direction.DESC,"createTime");
+        PageRequest request = PageRequest.of(page-1,size,sort);
+        Message query = new Message();
+        query.setPid(pid);
+        Example<Message> example = Example.of(query);
+        Page<Message> messagePage = messageService.getMessages(example,request);
+
+
+
+        //将留言的id筛选出来构建一个id的集合，然后查询这些留言的回复保存到byPidIn
+        List<Integer> pidList = messagePage.getContent().stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<Message> byPidIn = messageService.findByPidIn(pidList);
+        //
+        List<Integer> childPid = byPidIn.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+        List<Integer> messageIdList = new ArrayList<>(childPid);
+        messageIdList.addAll(pidList);
+        List<InsAwesome> list = insAweService.findByMessageIDInAndUserId(messageIdList,userId);
+        List<MessageDTO> messageDTOS = messagePage.getContent().stream().map(e -> new MessageDTO(e)).collect(Collectors.toList());
+        messageDTOS = messageDTOS.stream().map(item -> {
+            List<Message> messageList = byPidIn.stream().filter(i ->
+                    i.getPid().equals( item.getId())
+            ).collect(Collectors.toList());
+            item.setMessageList(messageList);
+            return item;
+        }).collect(Collectors.toList());
+
+        map.put("page",page);
+        map.put("currentPage",page);
+        map.put("size",size);
+        map.put("messageDTOS",messageDTOS);
+        map.put("total",messagePage.getTotalElements());
+        map.put("totalPages",messagePage.getTotalPages());
+
+        return new ModelAndView("common/boot",map);
+
+    }
 
 
 
