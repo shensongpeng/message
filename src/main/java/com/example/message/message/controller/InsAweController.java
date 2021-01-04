@@ -9,6 +9,7 @@ package com.example.message.message.controller;/*
 import com.example.message.message.VO.ResultVO;
 import com.example.message.message.dataobject.InsAwesome;
 import com.example.message.message.dataobject.Message;
+import com.example.message.message.enums.InsAwesomeEnum;
 import com.example.message.message.enums.ResultEnum;
 import com.example.message.message.exception.MessageException;
 import com.example.message.message.service.InsAweService;
@@ -56,6 +57,7 @@ public class InsAweController {
                 throw new MessageException(ResultEnum.MESSAGE_NOT_EXIT);
             }
             insAwesome.setAwedUserId(one.get().getUserId());
+            insAwesome.setType(InsAwesomeEnum.LIKE.getCode());
             return ResultVOUtil.success(insAweService.save(insAwesome));
         }
 

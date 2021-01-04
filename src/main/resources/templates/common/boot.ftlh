@@ -161,8 +161,13 @@
                                     <span>${messageDTO.createTime}</span>
                                     <button type="button" class="btn btn-default btn-sm awe">
                                         <div type="hidden" style=" display:none;">${messageDTO.id}</div>
-                                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-                                        赞
+                                        <#if messageDTO.isLike == false>
+                                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"> </span>
+                                            赞
+                                        <#else>
+                                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"> </span>
+                                            取消赞
+                                        </#if>
                                     </button>
                                     <button type="button" class="btn btn-default btn-sm showEdit">
                                         <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
@@ -196,8 +201,14 @@
                                                     <span>${childMessageDTO.createTime}   </span>
                                                     <button type="button" class="btn btn-default btn-sm awe">
                                                         <div type="hidden" style=" display:none;">${childMessageDTO.id}</div>
-                                                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"> </span>
-                                                        赞
+                                                        <#if childMessageDTO.isLike == false>
+                                                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"> </span>
+                                                            赞
+                                                        <#else>
+                                                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"> </span>
+                                                            取消赞
+                                                        </#if>
+
                                                     </button>
 
                                                 </h5>

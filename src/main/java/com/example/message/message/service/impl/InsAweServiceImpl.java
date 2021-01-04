@@ -36,7 +36,7 @@ public class InsAweServiceImpl implements InsAweService {
 
     @Override
     public List<InsAwesome> findByMessageIDInAndUserId(List<Integer> messageIdList, Integer userId) {
-        return null;
+        return insAwesomeRepository.findAllByMessageIdInAndUserIdAndType(messageIdList, userId, 1);
     }
 
     @Override

@@ -27,8 +27,9 @@ public class MessageDTO {
     private String targetUserAvatar;
     private Integer pid;
     private Integer likeNum;
+    private Boolean isLike;
 
-    private List<Message> messageList;
+    private List<MessageDTO> messageList;
 
     public MessageDTO() {
     }
